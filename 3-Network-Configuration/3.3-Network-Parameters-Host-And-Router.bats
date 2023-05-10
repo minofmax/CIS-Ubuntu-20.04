@@ -7,12 +7,15 @@ grep "net\.ipv4\.conf\.all\.accept_source_route" /etc/sysctl.conf /etc/sysctl.d/
 @test "3.3.1 Ensure source routed packets are not accepted (Automated)" {
     # tests for ipv4
     run bash -c "sysctl net.ipv4.conf.all.accept_source_route"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [ "$output" = "net.ipv4.conf.all.accept_source_route = 0" ]
     run bash -c "sysctl net.ipv4.conf.default.accept_source_route"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [ "$output" = "net.ipv4.conf.default.accept_source_route = 0" ]
     run bash -c "grep \"net\.ipv4\.conf\.all\.accept_source_route\" /etc/sysctl.conf /etc/sysctl.d/*"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     # Check if the desired output line is active in any of the conf files
     local CONF_ALL_FILE_CORRECT=0
@@ -23,6 +26,7 @@ grep "net\.ipv4\.conf\.all\.accept_source_route" /etc/sysctl.conf /etc/sysctl.d/
     done <<< "$output"
     [ $CONF_ALL_FILE_CORRECT -eq 1 ]
     run bash -c "grep \"net\.ipv4\.conf\.default\.accept_source_route\" /etc/sysctl.conf /etc/sysctl.d/*"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     # Check if the desired output line is active in any of the conf files
     local CONF_DEFAULT_FILE_CORRECT=0
@@ -34,16 +38,20 @@ grep "net\.ipv4\.conf\.all\.accept_source_route" /etc/sysctl.conf /etc/sysctl.d/
     [ $CONF_DEFAULT_FILE_CORRECT -eq 1 ]
 
     run check_ip_v6
+    echo {"\"output\"": "\"$output\""}
     [ $status -eq 0 ]
     if [[ "$output" == *"*** IPv6 is enabled on the system ***"* ]]; then
         # tests for ipv6
         run bash -c "sysctl net.ipv6.conf.all.accept_source_route"
+        echo {"\"output\"": "\"$output\""}
         [ "$status" -eq 0 ]
         [ "$output" = "net.ipv6.conf.all.accept_source_route = 0" ]
         run bash -c "sysctl net.ipv6.conf.default.accept_source_route"
+        echo {"\"output\"": "\"$output\""}
         [ "$status" -eq 0 ]
         [ "$output" = "net.ipv6.conf.default.accept_source_route = 0" ]
         run bash -c "grep \"net\.ipv6\.conf\.all\.accept_source_route\" /etc/sysctl.conf /etc/sysctl.d/*"
+        echo {"\"output\"": "\"$output\""}
         [ "$status" -eq 0 ]
         # Check if the desired output line is active in any of the conf files
         local CONF_FILE_CORRECT=0
@@ -54,6 +62,7 @@ grep "net\.ipv4\.conf\.all\.accept_source_route" /etc/sysctl.conf /etc/sysctl.d/
         done <<< "$output"
         [ $CONF_FILE_CORRECT -eq 1 ]
         run bash -c "grep \"net\.ipv6\.conf\.default\.accept_source_route\" /etc/sysctl.conf /etc/sysctl.d/*"
+        echo {"\"output\"": "\"$output\""}
         [ "$status" -eq 0 ]
         # Check if the desired output line is active in any of the conf files
         local CONF_FILE_CORRECT=0
@@ -69,12 +78,15 @@ grep "net\.ipv4\.conf\.all\.accept_source_route" /etc/sysctl.conf /etc/sysctl.d/
 @test "3.3.2 Ensure ICMP redirects are not accepted (Automated)" {
     # checks for ipv4
     run bash -c "sysctl net.ipv4.conf.all.accept_redirects"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [ "$output" = "net.ipv4.conf.all.accept_redirects = 0" ]
     run bash -c "sysctl net.ipv4.conf.default.accept_redirects"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [ "$output" = "net.ipv4.conf.default.accept_redirects = 0" ]
     run bash -c "grep \"net\.ipv4\.conf\.all\.accept_redirects\" /etc/sysctl.conf /etc/sysctl.d/*"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     # Check if the desired output line is active in any of the conf files
     local CONF_FILE_CORRECT=0
@@ -85,6 +97,7 @@ grep "net\.ipv4\.conf\.all\.accept_source_route" /etc/sysctl.conf /etc/sysctl.d/
     done <<< "$output"
     [ $CONF_FILE_CORRECT -eq 1 ]
     run bash -c "grep \"net\.ipv4\.conf\.default\.accept_redirects\" /etc/sysctl.conf /etc/sysctl.d/*"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     # Check if the desired output line is active in any of the conf files
     local CONF_FILE_CORRECT=0
@@ -97,15 +110,19 @@ grep "net\.ipv4\.conf\.all\.accept_source_route" /etc/sysctl.conf /etc/sysctl.d/
 
     # checks for ipv6
     run check_ip_v6
+    echo {"\"output\"": "\"$output\""}
     [ $status -eq 0 ]
     if [[ "$output" == *"*** IPv6 is enabled on the system ***"* ]]; then
         run bash -c "sysctl net.ipv6.conf.all.accept_redirects"
+        echo {"\"output\"": "\"$output\""}
         [ "$status" -eq 0 ]
         [ "$output" = "net.ipv6.conf.all.accept_redirects = 0" ]
         run bash -c "sysctl net.ipv6.conf.default.accept_redirects"
+        echo {"\"output\"": "\"$output\""}
         [ "$status" -eq 0 ]
         [ "$output" = "net.ipv6.conf.default.accept_redirects = 0" ]
         run bash -c "grep \"net\.ipv6\.conf\.all\.accept_redirects\" /etc/sysctl.conf /etc/sysctl.d/*"
+        echo {"\"output\"": "\"$output\""}
         [ "$status" -eq 0 ]
         # Check if the desired output line is active in any of the conf files
         local CONF_FILE_CORRECT=0
@@ -116,6 +133,7 @@ grep "net\.ipv4\.conf\.all\.accept_source_route" /etc/sysctl.conf /etc/sysctl.d/
         done <<< "$output"
         [ $CONF_FILE_CORRECT -eq 1 ]
         run bash -c "grep \"net\.ipv6\.conf\.default\.accept_redirects\" /etc/sysctl.conf /etc/sysctl.d/*"
+        echo {"\"output\"": "\"$output\""}
         [ "$status" -eq 0 ]
         # Check if the desired output line is active in any of the conf files
         local CONF_FILE_CORRECT=0

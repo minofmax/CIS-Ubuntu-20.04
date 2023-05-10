@@ -2,12 +2,14 @@
 
 @test "4.2.1.1 Ensure rsyslog is installed (Automated)" {
     run bash -c "dpkg -s rsyslog"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"Status: install ok installed"* ]]
 }
 
 @test "4.2.1.2 Ensure rsyslog Service is enabled (Automated)" {
     run bash -c "systemctl is-enabled rsyslog"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == "enabled" ]]
 }
@@ -18,6 +20,7 @@
 
 @test "4.2.1.4 Ensure rsyslog default file permissions configured (Automated)" {
     run bash -c "grep ^\$FileCreateMode /etc/rsyslog.conf /etc/rsyslog.d/*.conf"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"0640"* ]] || [[ "$output" == *"0600"* ]] || [[ "$output" == *"0440"* ]] || [[ "$output" == *"0400"* ]]
 }
@@ -32,6 +35,7 @@
 
 @test "4.2.2.1 Ensure journald is configured to send logs to rsyslog (Automated)" {
     run bash -c "grep -e \"^\s*ForwardToSyslog\" /etc/systemd/journald.conf"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"ForwardToSyslog=yes"* ]]
     [[ "$output" != *"#ForwardToSyslog=yes"* ]]
@@ -39,6 +43,7 @@
 
 @test "4.2.2.2 Ensure journald is configured to compress large log files (Automated)" {
     run bash -c "grep -e \"^\s*Compress\" /etc/systemd/journald.conf"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"Compress=yes"* ]]
     [[ "$output" != *"#Compress=yes"* ]]
@@ -46,6 +51,7 @@
 
 @test "4.2.2.3 Ensure journald is configured to write logfiles to persistent disk (Automated)" {
     run bash -c "grep -e \"^\s*Storage\" /etc/systemd/journald.conf"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"Storage=persistent"* ]]
     [[ "$output" != *"#Storage=persistent"* ]]

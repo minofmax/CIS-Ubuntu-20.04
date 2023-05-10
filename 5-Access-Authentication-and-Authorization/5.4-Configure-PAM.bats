@@ -19,9 +19,11 @@
 
 @test "5.4.2 Ensure lockout for failed password attempts is configured (Automated)" {
     run bash -c "grep \"pam_tally2\" /etc/pam.d/common-auth"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == "auth required pam_tally2.so onerr=fail audit silent deny=5 unlock_time=900" ]]
     run bash -c "grep -E \"pam_(tally2|deny)\.so\" /etc/pam.d/common-account"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"account"*"requisite"*"pam_deny.so"* ]]
     [[ "$output" == *"account"*"required"*"pam_tally2.so"* ]]
@@ -32,10 +34,12 @@
     [[ "$REMEMBER" != "" ]]
     REMEMBER=(${REMEMBER//password required pam_pwhistory.so remember=/ }) # get the number from the string
     [[ "$REMEMBER" -gt 4 ]]
+    echo {"\"output\"": "\"$REMEMBER\""}
 }
 
 @test "5.4.4 Ensure password hashing algorithm is SHA-512 (Automated)" {
     run bash -c "grep -E '^\s*password\s+(\S+\s+)+pam_unix\.so\s+(\S+\s+)*sha512\s*(\S+\s*)*(\s+#.*)?$' /etc/pam.d/common-password"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == "password"*"[success=1 default=ignore]"*"sha512"* ]]
 }

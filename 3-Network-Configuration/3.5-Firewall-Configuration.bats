@@ -10,6 +10,7 @@ load IPv6-helper
 
 @test "3.5.1.2 Ensure iptables-persistent is not installed with ufw (Automated)" {
     run bash -c "dpkg-query -s iptables-persistent"
+    echo {"\"output\"": "\"$output\""}
     [ $status -eq 1 ]
     [[ "$output" == *"package 'iptables-persistent' is not installed and no information is available"* ]]
 }
@@ -21,6 +22,7 @@ load IPv6-helper
 
 @test "3.5.1.4 Ensure ufw loopback traffic is configured (Automated)" {
     run bash -c "ufw status verbose"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     local check1=0 check2=0 check3=0 check4=0 check5=0 check6=0
     for index in ${!lines[*]}
@@ -54,6 +56,7 @@ load IPv6-helper
 
 @test "3.5.1.7 Ensure ufw default deny firewall policy (Automated)" {
     run bash -c "ufw status verbose | grep -i default"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"deny (incoming)"* || "$output" == *"reject (incoming)"* ]]
     [[ "$output" == *"deny (outgoing)"* || "$output" == *"reject (outgoing)"* ]]
@@ -65,11 +68,13 @@ load IPv6-helper
 
 @test "3.5.2.1 Ensure nftables is installed (Automated)" {
     run bash -c "dpkg-query -s nftables | grep 'Status: install ok installed'"
+    echo {"\"output\"": "\"$output\""}
     [[ "$output" == "Status: install ok installed" ]]
 }
 
 @test "3.5.2.2 Ensure ufw is uninstalled or disabled with nftables (Automated)" {
     run bash -c "dpkg-query -s ufw | grep 'Status: install ok installed'"
+    echo {"\"output\"": "\"$output\""}
     if [[ ! "$output" == *"package 'ufw' is not installed and no information is available"* ]]; then
         [[ $(ufw status | grep 'Status') == "Status: inactive" ]]
     fi
@@ -77,42 +82,52 @@ load IPv6-helper
 
 @test "3.5.2.3 Ensure iptables are flushed with nftables (Manual)" {
     run bash -c "iptables -L"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [ "$output" = "" ]
     run bash -c "ip6tables -L"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [ "$output" = "" ]
 }
 
 @test "3.5.2.4 Ensure a nftables table exists (Automated)" {
     run bash -c "nft list tables"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
 }
 
 @test "3.5.2.5 Ensure nftables base chains exist (Automated)" {
     run bash -c "nft list ruleset | grep 'hook input'"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"type filter hook input priority filter;"* ]]
     run bash -c "nft list ruleset | grep 'hook forward'"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"type filter hook forward priority filter;"* ]]
     run bash -c "nft list ruleset | grep 'hook output'"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"type filter hook output priority filter;"* ]]
 }
 
 @test "3.5.2.6 Ensure nftables loopback traffic is configured (Automated)" {
     run bash -c "nft list ruleset | awk '/hook input/,/}/' | grep 'iif \"lo\" accept'"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"iif \"lo\" accept"* ]]
     run bash -c "nft list ruleset | awk '/hook input/,/}/' | grep 'ip saddr'"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"ip saddr 127.0.0.0/8 counter packets 0 bytes 0 drop"* ]]
     
     run check_ip_v6
+    echo {"\"output\"": "\"$output\""}
     [ $status -eq 0 ]
     if [[ "$output" == *"*** IPv6 is enabled on the system ***"* ]]; then
         run bash -c "nft list ruleset | awk '/hook input/,/}/' | grep 'ip6 saddr'"
+        echo {"\"output\"": "\"$output\""}
         [ "$status" -eq 0 ]
         [[ "$output" == *"ip6 saddr ::1 counter packets 0 bytes 0 drop"* ]]
     fi
@@ -120,12 +135,14 @@ load IPv6-helper
 
 @test "3.5.2.7 Ensure nftables outbound and established connections are configured (Manual)" {
     run bash -c "nft list ruleset | awk '/hook input/,/}/' | grep -E 'ip protocol (tcp|udp|icmp) ct state'"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"ip protocol tcp ct state established accept"* ]]
     [[ "$output" == *"ip protocol udp ct state established accept"* ]]
     [[ "$output" == *"ip protocol icmp ct state established accept"* ]]
 
     run bash -c "nft list ruleset | awk '/hook output/,/}/' | grep -E 'ip protocol (tcp|udp|icmp) ct state'"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"ip protocol tcp ct state established,related,new accept"* ]]
     [[ "$output" == *"ip protocol udp ct state established,related,new accept"* ]]
@@ -134,18 +151,22 @@ load IPv6-helper
 
 @test "3.5.2.8 Ensure nftables default deny firewall policy (Automated)" {
     run bash -c "nft list ruleset | grep 'hook input'"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"type filter hook input priority filter; policy drop;"* ]]
     run bash -c "nft list ruleset | grep 'hook forward'"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"type filter hook forward priority filter; policy drop;"* ]]
     run bash -c "nft list ruleset | grep 'hook output'"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"type filter hook output priority filter; policy drop;"* ]]
 }
 
 @test "3.5.2.9 Ensure nftables service is enabled (Automated)" {
     run bash -c "systemctl is-enabled nftables"
+    echo {"\"output\"": "\"$output\""}
     [[ "$output" == "enabled" ]]
 }
 
@@ -159,6 +180,7 @@ load IPv6-helper
 
 @test "3.5.3.1.1 Ensure iptables packages are installed (Automated)" {
     run bash -c "apt list iptables iptables-persistent | grep installed"
+    echo {"\"output\"": "\"$output\""}
     [ $status -eq 0 ]
     [[ "$output" =~ iptables[^-].*\[(installed(,automatic)*)\] ]]
     [[ "$output" =~ iptables-persistent.*\[(installed(,automatic)*)\] ]]
@@ -166,12 +188,14 @@ load IPv6-helper
 
 @test "3.5.3.1.2 Ensure nftables is not installed with iptables (Automated)" {
     run bash -c "dpkg -s nftables | grep 'dpkg-query'"
+    echo {"\"output\"": "\"$output\""}
     [ $status -eq 1 ]
     [[ "$output" == *"dpkg-query: package 'nftables' is not installed"* ]]
 }
 
 @test "3.5.3.1.3 Ensure ufw is uninstalled or disabled with iptables (Automated)" {
     run bash -c "dpkg -s ufw | grep 'dpkg-query'"
+    echo {"\"output\"": "\"$output\""}
     if [[ ! "$output" == *"dpkg-query: package 'ufw' is not installed and no information is available"* ]]; then
         [[ $(ufw status | grep 'Status') == "Status: inactive" ]]
     fi
@@ -181,10 +205,12 @@ load IPv6-helper
 
 @test "3.5.3.2.1 Ensure iptables loopback traffic is configured (Automated)" {
     run bash -c "iptables -L INPUT -v -n"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" = *"ACCEPT"*"all"*"--"*"lo"*"*"*"0.0.0.0/0"*"0.0.0.0/0"* ]]
     [[ "$output" = *"DROP"*"all"*"--"*"*"*"*"*"127.0.0.0/8"*"0.0.0.0/0"* ]]
     run bash -c "iptables -L OUTPUT -v -n"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" = *"ACCEPT"*"all"*"--"*"*"*"lo"*"0.0.0.0/0"*"0.0.0.0/0"* ]]
 }
@@ -195,6 +221,7 @@ load IPv6-helper
 
 @test "3.5.3.2.3 Ensure iptables default deny firewall policy (Automated)" {
     run bash -c "iptables -L"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"Chain INPUT (policy DROP)"* || "$output" == *"Chain INPUT (policy REJECT)"* ]]
     [[ "$output" == *"Chain FORWARD (policy DROP)"* || "$output" == *"Chain FORWARD (policy REJECT)"* ]]
@@ -209,22 +236,26 @@ load IPv6-helper
 
 @test "3.5.3.3.1 Ensure ip6tables loopback traffic is configured (Automated)" {
     run check_ip_v6
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     if [[ "$output" != *"*** IPv6 is enabled on the system ***"* ]]; then
         skip "*** IPv6 is not enabled on the system ***"
     fi
 
     run bash -c "ip6tables -L INPUT -v -n"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" = *"ACCEPT"*"all"*"lo"*"*"*"::/0"*"::/0"* ]]
     [[ "$output" = *"DROP"*"all"*"*"*"*"*"::1"*"::/0"* ]]
     run bash -c "ip6tables -L OUTPUT -v -n"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" = *"ACCEPT"*"all"*"*"*"lo"*"::/0"*"::/0"* ]]
 }
 
 @test "3.5.3.3.2 Ensure ip6tables outbound and established connections are configured (Manual)" {
     run check_ip_v6
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     if [[ "$output" != *"*** IPv6 is enabled on the system ***"* ]]; then
         skip "*** IPv6 is not enabled on the system ***"
@@ -234,12 +265,14 @@ load IPv6-helper
 
 @test "3.5.3.3.3 Ensure ip6tables default deny firewall policy (Automated)" {
     run check_ip_v6
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     if [[ "$output" != *"*** IPv6 is enabled on the system ***"* ]]; then
         skip "*** IPv6 is not enabled on the system ***"
     fi
 
     run bash -c "ip6tables -L"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"Chain INPUT (policy DROP)"* || "$output" == *"Chain INPUT (policy REJECT)"* ]]
     [[ "$output" == *"Chain FORWARD (policy DROP)"* || "$output" == *"Chain FORWARD (policy REJECT)"* ]]
@@ -248,6 +281,7 @@ load IPv6-helper
 
 @test "3.5.3.3.4 Ensure ip6tables firewall rules exist for all open ports (Manual)" {
     run check_ip_v6
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     if [[ "$output" != *"*** IPv6 is enabled on the system ***"* ]]; then
         skip "*** IPv6 is not enabled on the system ***"

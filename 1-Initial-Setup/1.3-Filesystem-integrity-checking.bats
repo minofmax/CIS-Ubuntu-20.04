@@ -2,9 +2,11 @@
 
 @test "1.3.1 Ensure AIDE is installed (Automated)" {
     run bash -c "dpkg -s aide | grep -E '(Status:|not installed)'"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" = "Status: install ok installed" ]]
     run bash -c "dpkg -s aide-common | grep -E '(Status:|not installed)'"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" = "Status: install ok installed" ]]
 }
@@ -33,6 +35,8 @@
 
     local aide_in_any_cron
     aide_in_any_cron=$(grep -Ers '^([^#]+\s+)?(\/usr\/s?bin\/|^\s*)aide(\.wrapper)?\s(--check|\$AIDEARGS)\b' /etc/cron.* /etc/crontab /var/spool/cron/)
+
+    echo {"\"output\"": {"\"$check_enabled\"": "\"$check_enabled\"", "\"check_status\"": "\"$check_status\"", "\"timer_enabled\"": "\"$timer_enabled\"", "\"timer_status\"": "\"$timer_status\"", "\"aide_in_any_cron\"": "\"$aide_in_any_cron\""}}
 
     [ "$check_enabled" != false ] && [ "$check_status" != false ] &&
      [ "$timer_enabled" != false ] && [ "$timer_status" != false ] \

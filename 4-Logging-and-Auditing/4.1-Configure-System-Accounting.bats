@@ -4,18 +4,21 @@ load 4.1-helper
 
 @test "4.1.1.1 Ensure auditd is installed (Automated)" {
     run bash -c "dpkg -s auditd audispd-plugins"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" == *"Status: install ok installed"* ]]
 }
 
 @test "4.1.1.2 Ensure auditd service is enabled (Automated)" {
     run bash -c "systemctl is-enabled auditd"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [ "$output" = "enabled" ]
 }
 
 @test "4.1.1.3 Ensure auditing for processes that start prior to auditd is enabled (Automated)" {
     run bash -c "grep \"^\s*linux\" /boot/grub/grub.cfg | grep -v \"audit=1\""
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -ne 0 ]
     [ "$output" = "" ]
 }
@@ -30,24 +33,29 @@ load 4.1-helper
 
 @test "4.1.2.2 Ensure audit logs are not automatically deleted (Automated)" {
     run bash -c "grep max_log_file_action /etc/audit/auditd.conf"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [ "$output" = "max_log_file_action = keep_logs" ]
 }
 
 @test "4.1.2.3 Ensure system is disabled when audit logs are full (Automated)" {
     run bash -c "grep space_left_action /etc/audit/auditd.conf"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [[ "$output" = "space_left_action = email"* ]]
     run bash -c "grep action_mail_acct /etc/audit/auditd.conf"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [ "$output" = "action_mail_acct = root" ]
     run bash -c "grep admin_space_left_action /etc/audit/auditd.conf"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     [ "$output" = "admin_space_left_action = halt" ]
 }
 
 @test "4.1.3 Ensure events that modify date and time information are collected (Automated)" {
     run bash -c "grep time-change /etc/audit/rules.d/*.rules"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     for current_line in "${lines[*]}"
     do
@@ -59,6 +67,7 @@ load 4.1-helper
     done
 
     run bash -c "auditctl -l | grep time-change"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     for current_line in "${lines[*]}"
     do
@@ -72,6 +81,7 @@ load 4.1-helper
 
 @test "4.1.4 Ensure events that modify user/group information are collected (Automated)" {
     run bash -c "grep identity /etc/audit/rules.d/*.rules"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     for current_line in "${lines[*]}"
     do
@@ -82,6 +92,7 @@ load 4.1-helper
         [[ "$current_line" == *"-w /etc/security/opasswd -p wa -k identity"* ]]
     done
     run bash -c "auditctl -l | grep identity"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     for current_line in "${lines[*]}"
     do
@@ -95,6 +106,7 @@ load 4.1-helper
 
 @test "4.1.5 Ensure events that modify the system's network environment are collected (Automated)" {
     run bash -c "grep system-locale /etc/audit/rules.d/*.rules"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     for current_line in "${lines[*]}"
     do
@@ -106,6 +118,7 @@ load 4.1-helper
         [[ "$current_line" == *"-w /etc/network -p wa -k system-locale"* ]]
     done
     run bash -c "auditctl -l | grep system-locale"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     for current_line in "${lines[*]}"
     do
@@ -120,6 +133,7 @@ load 4.1-helper
 
 @test "4.1.6 Ensure events that modify the system's Mandatory Access Controls are collected (Automated)" {
     run bash -c "grep MAC-policy /etc/audit/rules.d/*.rules"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     for current_line in "${lines[*]}"
     do
@@ -127,6 +141,7 @@ load 4.1-helper
         [[ "$current_line" == *"-w /etc/apparmor.d/ -p wa -k MAC-policy"* ]]
     done
     run bash -c "auditctl -l | grep MAC-policy"
+    echo {"\"output\"": "\"$output\""}
     [ "$status" -eq 0 ]
     for current_line in "${lines[*]}"
     do
