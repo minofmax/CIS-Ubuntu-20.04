@@ -7,6 +7,8 @@
     run bash -c "lsmod | grep cramfs"
     [ "$status" -eq 1 ]
     [ "$output" = "" ]
+    echo "1.1.1.1"
+    echo "$output"
 }
 
 @test "1.1.1.2 Ensure mounting of freevxfs filesystems is disabled (Automated)" {
